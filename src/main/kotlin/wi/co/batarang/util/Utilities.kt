@@ -1,43 +1,11 @@
 package wi.co.batarang.util
 
 import java.io.File
-import java.util.concurrent.TimeUnit
+import java.net.http.HttpClient
+import java.net.http.HttpClient.Version.HTTP_2
+import java.time.Duration.ofSeconds
 import kotlin.concurrent.thread
 import kotlin.math.abs
-
-/**
- * Wir müssen hier verschiedene Programme ausführen (bspw. git, npm). Die Java-
- * API dafür ist leider sehr umständlich, deswegegen, haben wir einen Wrapper
- * mit dem wir Strings als commands ausführen können.
- */
-fun String.runCommand(workingDirectory: File = File("."), additionalEnv: Map<String, String> = mapOf()): String {
-    val parts = this.split("\\s".toRegex())
-        .map { it.replace("\\__", " ") }
-    val builder = ProcessBuilder(parts)
-        .directory(workingDirectory)
-        .redirectErrorStream(true)
-    builder.environment() += additionalEnv
-    val proc = builder.start()
-    var out = ""
-    val bufferedReader = proc.inputStream.bufferedReader()
-    while (true) {
-        val c = bufferedReader.read()
-        if (-1 == c)
-            break
-        val char = c.toChar()
-        out += char
-    }
-
-    val completed = proc.waitFor(10, TimeUnit.MINUTES)
-    if (!completed || proc.exitValue() != 0) {
-        println("Fehler beim Aufruf von '${parts.first()}'")
-        println("Hier der output: $out")
-        throw RuntimeException("Command nicht erfolgreich '${parts.first()}'")
-    } else {
-        println("Command '${parts.first()}' wurde erfolgreich ausgeführt")
-    }
-    return out
-}
 
 fun String.runBackground(workingDir: File = File("."), debug: Boolean = false): Process {
     val parts = this
@@ -68,3 +36,10 @@ fun String.runBackground(workingDir: File = File("."), debug: Boolean = false): 
     }
     return process
 }
+
+private const val HTTP_TIMEOUT_IN_SECONDS = 5L
+
+val httpClient: HttpClient = HttpClient.newBuilder()
+    .connectTimeout(ofSeconds(HTTP_TIMEOUT_IN_SECONDS))
+    .version(HTTP_2)
+    .build()

@@ -2,12 +2,10 @@ package wi.co.batarang.plugins.jenkins
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import wi.co.batarang.mapper
+import wi.co.batarang.util.httpClient
 import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpClient.Version.HTTP_2
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers.ofString
-import java.time.Duration.ofSeconds
 import java.util.Base64
 
 data class Job(
@@ -32,14 +30,9 @@ class JenkinsApi(
     private val token: String
 ) {
 
-    private val client = HttpClient.newBuilder()
-        .connectTimeout(ofSeconds(5))
-        .version(HTTP_2)
-        .build()
-
     private fun listAll(): ListAllRespnse {
         val getRequest = mkGet("$baseUrl/api/json")
-        val response = client.send(getRequest, ofString())
+        val response = httpClient.send(getRequest, ofString())
         return mapper.readValue(response.body())
     }
 
@@ -47,7 +40,7 @@ class JenkinsApi(
         return listAll().jobs.map { job ->
             val detailsUrl = job.url + "/api/json"
             val request = mkGet(detailsUrl)
-            val response = client.send(request, ofString())
+            val response = httpClient.send(request, ofString())
             val details: JobDetails = mapper.readValue(response.body())
             details
         }

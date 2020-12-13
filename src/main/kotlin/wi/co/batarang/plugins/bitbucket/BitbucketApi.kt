@@ -2,12 +2,10 @@ package wi.co.batarang.plugins.bitbucket
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import wi.co.batarang.mapper
+import wi.co.batarang.util.httpClient
 import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpClient.Version.HTTP_2
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers.ofString
-import java.time.Duration.ofSeconds
 import java.util.Base64
 
 data class Href(
@@ -91,25 +89,20 @@ class BitbucketApi(
     private val username: String,
     private val password: String
 ) {
-
-    private val client = HttpClient.newBuilder()
-        .connectTimeout(ofSeconds(5))
-        .version(HTTP_2)
-        .build()
-
     private fun listProjects(): ProjectsListResponse {
         val getRequest = mkGet("$baseUrl/rest/api/1.0/projects?limit=1000")
-        val response = client.send(getRequest, ofString())
-        return  mapper.readValue(response.body())
+        val response = httpClient.send(getRequest, ofString())
+        return mapper.readValue(response.body())
     }
 
+    @SuppressWarnings("TooGenericExceptionCaught")
     fun listRepositories(): List<RepositoryWithReadme> {
         return listProjects()
             .values
             .flatMap { project ->
                 val reposUrl = project.repositoriesLink(baseUrl)
                 val getRequest = mkGet(reposUrl)
-                val response = client.send(getRequest, ofString())
+                val response = httpClient.send(getRequest, ofString())
                 val reposResponse: RepositoriesListResponse = mapper.readValue(response.body())
                 reposResponse.values.map { it.mkRepository(project) }
             }
@@ -117,7 +110,7 @@ class BitbucketApi(
                 val readMeText: String? = try {
                     val readmeUrl = repository.readmeLink(baseUrl)
                     val getRequest = mkGet(readmeUrl)
-                    val response = client.send(getRequest, ofString())
+                    val response = httpClient.send(getRequest, ofString())
                     val readmeResponse: ReadmeResponse = mapper.readValue(response.body())
                     readmeResponse.text
                 } catch (e: Exception) {

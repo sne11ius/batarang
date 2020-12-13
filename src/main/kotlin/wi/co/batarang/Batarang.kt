@@ -20,17 +20,7 @@ import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
     if ("-h" in args) {
-        println(
-            """
-                batarang -_-
-                Parameters:
-                  Any parameters can be used to pre-filter the task list
-                Options:
-                  -u Update data and exit. Consider running with this option as cron task
-                  -h Print help and exit
-            """.trimIndent()
-        )
-        exitProcess(0)
+        printHelpAndExit()
     }
     if ("-u" in args) {
         updatePluginData()
@@ -45,10 +35,24 @@ fun main(args: Array<String>) {
         // screen.stopScreen(false)
         // updatePluginData()
     }
-    startGui(args)
+    runGui(args)
 }
 
-private fun startGui(args: Array<String>) {
+fun printHelpAndExit() {
+    println(
+        """
+            batarang -_-
+            Parameters:
+              Any parameters can be used to pre-filter the task list
+            Options:
+              -u Update data and exit. Consider running with this option as cron task
+              -h Print help and exit
+        """.trimIndent()
+    )
+    exitProcess(0)
+}
+
+private fun runGui(args: Array<String>) {
     val allActions = plugins.flatMap { plugin ->
         plugin.setData(SettingsService.readPluginData(plugin))
         val settingsForPlugin = SettingsService.settingsForPlugin(plugin)
@@ -64,13 +68,17 @@ private fun startGui(args: Array<String>) {
             exitProcess(0)
         }
     }
+    buildLayout(args, allActions)
+}
 
+@SuppressWarnings("MagicNumber")
+fun buildLayout(args: Array<String>, allActions: List<Action>) {
     val terminal = UnixTerminal()
     val screen = TerminalScreen(terminal)
     screen.startScreen()
 
     val window = BasicWindow()
-    window.setHints(listOf(CENTERED, NO_DECORATIONS));
+    window.setHints(listOf(CENTERED, NO_DECORATIONS))
 
     val textGUI = MultiWindowTextGUI(screen)
     val contentPanel = Panel(GridLayout(2))
@@ -109,13 +117,14 @@ private fun startGui(args: Array<String>) {
     contentPanel.apply {
         addComponent(textBox)
         addComponent(actionList)
-        addComponent(Button("Cancel") {
-            exitProcess(0)
-        })
+        addComponent(
+            Button("Cancel") {
+                exitProcess(0)
+            }
+        )
     }
 
     textBox.text = args.joinToString(" ")
-
     window.component = contentPanel
 
     textGUI.addWindowAndWait(window)

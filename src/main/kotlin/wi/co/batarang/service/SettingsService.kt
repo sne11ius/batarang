@@ -3,25 +3,28 @@ package wi.co.batarang.service
 import wi.co.batarang.Setting
 import wi.co.batarang.plugins.Plugin
 import wi.co.batarang.plugins.plugins
-import java.nio.file.Files
+import java.lang.System.getProperty
+import java.nio.file.Files.createDirectories
+import java.nio.file.Files.createFile
+import java.nio.file.Files.exists
 import java.nio.file.Files.readAllLines
 import java.nio.file.Files.readString
 import java.nio.file.Files.writeString
 import java.nio.file.Path
-import java.nio.file.Paths
+import java.nio.file.Paths.get
 
 object SettingsService {
 
-    private val userHome = System.getProperty("user.home")
-    private val configDir: Path = Paths.get(userHome, ".config", "batarang")
+    private val userHome = getProperty("user.home")
+    private val configDir: Path = get(userHome, ".config", "batarang")
     private val configFile: Path = configDir.resolve("config.txt")
 
     init {
-        if (!Files.exists(configDir)) {
-            Files.createDirectories(configDir)
+        if (!exists(configDir)) {
+            createDirectories(configDir)
         }
-        if (!Files.exists(configFile)) {
-            Files.createFile(configFile)
+        if (!exists(configFile)) {
+            createFile(configFile)
         }
         val settings = readSettings()
         var settingsChanged = false
@@ -69,5 +72,4 @@ object SettingsService {
     fun writePluginData(plugin: Plugin, pluginData: String) {
         writeString(configDir.resolve(plugin.javaClass.simpleName + ".txt"), pluginData)
     }
-
 }

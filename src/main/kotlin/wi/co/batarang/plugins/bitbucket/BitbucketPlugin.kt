@@ -13,8 +13,8 @@ data class RepositoryData(
     val slug: String,
     val readme: String
 ) {
-    fun mkCloneUrl(gitBaseUrl: String): String = "ssh://git@$gitBaseUrl/${projectKey}/${slug}.git"
-    fun mkWebUrl(httpBaseUrl: String): String = "$httpBaseUrl/projects/${projectKey}/repos/${slug}/browse"
+    fun mkCloneUrl(gitBaseUrl: String): String = "ssh://git@$gitBaseUrl/$projectKey/$slug.git"
+    fun mkWebUrl(httpBaseUrl: String): String = "$httpBaseUrl/projects/$projectKey/repos/$slug/browse"
 }
 
 object BitbucketPlugin : Plugin {

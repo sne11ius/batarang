@@ -1,0 +1,13 @@
+comments:
+  AbsentOrWrongFileLicense:
+    active: false
+
+performance:
+  SpreadOperator:
+    active: false
+
+style:
+  MaxLineLength:
+    maxLineLength: 140
+  MagicNumber:
+    ignoreAnnotation: true

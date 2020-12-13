@@ -6,14 +6,12 @@ import wi.co.batarang.Setting
 import wi.co.batarang.SettingKey
 import wi.co.batarang.mapper
 import wi.co.batarang.plugins.Plugin
+import wi.co.batarang.util.httpClient
 import wi.co.batarang.util.runBackground
 import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpClient.Version.HTTP_2
 import java.net.http.HttpRequest
 import java.net.http.HttpRequest.BodyPublishers.noBody
 import java.net.http.HttpResponse.BodyHandlers.ofString
-import java.time.Duration.ofSeconds
 import java.util.Base64
 
 object JenkinsPlugin : Plugin {
@@ -25,11 +23,6 @@ object JenkinsPlugin : Plugin {
     override val requiredSettings: List<SettingKey> = listOf(httpUrlKey, usernameKey, tokenKey)
 
     private var jobs: List<JobDetails> = emptyList()
-
-    private val client = HttpClient.newBuilder()
-        .connectTimeout(ofSeconds(5))
-        .version(HTTP_2)
-        .build()
 
     override fun setData(data: String) {
         jobs = mapper.readValue(data)
@@ -83,10 +76,9 @@ object JenkinsPlugin : Plugin {
                         val crumb: String
                     )
                     val request = mkPost(job.url + "/build")
-                    client.send(request, ofString())
+                    httpClient.send(request, ofString())
                 }
             )
         }
     }
-
 }
