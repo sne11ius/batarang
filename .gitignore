@@ -1,0 +1,5 @@
+.gradle
+.idea
+
+build
+src/main/resources/META-INF/native-image/*.json
