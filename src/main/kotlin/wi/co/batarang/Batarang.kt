@@ -14,6 +14,7 @@ import com.googlecode.lanterna.gui2.Window.Hint.CENTERED
 import com.googlecode.lanterna.gui2.Window.Hint.NO_DECORATIONS
 import com.googlecode.lanterna.screen.TerminalScreen
 import com.googlecode.lanterna.terminal.ansi.UnixTerminal
+import wi.co.batarang.module.activation.ActivationModule.isModuleActive
 import wi.co.batarang.module.modules
 import kotlin.system.exitProcess
 
@@ -22,6 +23,7 @@ fun main(args: Array<String>) {
     if ("-h" in args) {
         printHelpAndExit()
     }
+    Settings.update()
     if ("-u" in args) {
         updateModuleData()
         exitProcess(0)
@@ -51,9 +53,8 @@ fun printHelpAndExit() {
 
 private fun runGui(args: Array<String>) {
     val allActions = modules.flatMap { module ->
-        module.setData(SettingsService.readModuleData(module))
-        val settingsForModule = SettingsService.settingsForModule(module)
-        module.getActions(settingsForModule)
+        module.setData(Settings.readModuleData(module))
+        module.getActions()
     }
     val immediateActions = allActions.filter { it.matches(args.toList()) }
     if (immediateActions.size == 1) {
@@ -128,10 +129,9 @@ fun buildLayout(args: Array<String>, allActions: List<Action>) {
 }
 
 private fun updateModuleData() {
-    modules.forEach { module ->
+    modules.filter { isModuleActive(it) }.forEach { module ->
         println("Aktualisiere Daten für ${module.javaClass.simpleName}")
-        val moduleSettings = SettingsService.settingsForModule(module)
-        val moduleData = module.updateData(moduleSettings)
-        SettingsService.writeModuleData(module, moduleData)
+        val moduleData = module.updateData()
+        Settings.writeModuleData(module, moduleData)
     }
 }

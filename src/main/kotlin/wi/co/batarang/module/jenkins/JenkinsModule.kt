@@ -16,11 +16,14 @@ import java.util.Base64
 
 object JenkinsModule : Module {
 
+    private lateinit var settings: List<Setting>
     private val httpUrlKey = SettingKey("Jenkins-URL (e.g. 'https://myhost.com/jenkins')", "http-url")
     private val usernameKey = SettingKey("Jenkins username", "username")
     private val tokenKey = SettingKey("Jenkins API-Token", "token")
 
     override val requiredSettings: List<SettingKey> = listOf(httpUrlKey, usernameKey, tokenKey)
+
+    override val canBeActivated = true
 
     private var jobs: List<JobDetails> = emptyList()
 
@@ -28,7 +31,7 @@ object JenkinsModule : Module {
         jobs = mapper.readValue(data)
     }
 
-    override fun updateData(settings: List<Setting>): String {
+    override fun updateData(): String {
         val httpBaseUrl = settings.first { it.key == httpUrlKey }.value
         val username = settings.first { it.key == usernameKey }.value
         val token = settings.first { it.key == tokenKey }.value
@@ -37,7 +40,7 @@ object JenkinsModule : Module {
         return mapper.writeValueAsString(api.listWithDescription())
     }
 
-    override fun getActions(settings: List<Setting>): List<Action> {
+    override fun getActions(): List<Action> {
         val username = settings.first { it.key == usernameKey }.value
         val token = settings.first { it.key == tokenKey }.value
 
@@ -70,5 +73,9 @@ object JenkinsModule : Module {
                 }
             )
         }
+    }
+
+    override fun updateSettings(settings: List<Setting>) {
+        this.settings = settings
     }
 }

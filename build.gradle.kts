@@ -104,6 +104,7 @@ task("validate-pre-commit") {
         val commandSuffix = if (isWindows) ".bat" else ""
         println("Running ktlintformat and detekt")
         "./gradlew$commandSuffix ktlintFormat detekt".runCommand(failWith = failWith)
+        "git add -A".runCommand(failWith = failWith)
     }
 }
 

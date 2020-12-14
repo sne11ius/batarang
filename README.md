@@ -41,7 +41,6 @@ A cli tool to easen the burden of everyday dev tasks
 
 - Add more usefull stuff
 - Private Modules (like shell scripts)
-- Disable/Enable Modules
 
 ## Build
 

@@ -9,12 +9,15 @@ import wi.co.batarang.util.runBackground
 // Yes, a slightly ill-advised use of our shiny module system. Hit me :D
 object LauncherModule : Module {
 
+    private lateinit var settings: List<Setting>
     private val launchCommandlKey = SettingKey(
-        "How to launch stuff, esp. Web-URLs. Use `{}` as placeholder (e.g. 'xdg-open {}'.",
+        "How to launch stuff, esp. Web-URLs. Use `{}` as placeholder (e.g. 'xdg-open {})'",
         "launcher-command"
     )
 
     override val requiredSettings = listOf(launchCommandlKey)
+
+    override val canBeActivated = false
 
     private var launchCommand: String? = null
 
@@ -22,13 +25,17 @@ object LauncherModule : Module {
         // This method intentionally blank
     }
 
-    override fun updateData(settings: List<Setting>): String {
+    override fun updateData(): String {
         return ""
     }
 
-    override fun getActions(settings: List<Setting>): List<Action> {
+    override fun getActions(): List<Action> {
         launchCommand = settings.first { it.key == launchCommandlKey }.value
         return emptyList()
+    }
+
+    override fun updateSettings(settings: List<Setting>) {
+        this.settings = settings
     }
 
     @Suppress("TooGenericExceptionThrown")

@@ -1,6 +1,7 @@
 package wi.co.batarang
 
 import wi.co.batarang.module.Module
+import wi.co.batarang.module.activation.ActivationModule.isModuleActive
 import wi.co.batarang.module.modules
 import java.lang.System.getProperty
 import java.lang.System.getenv
@@ -23,7 +24,7 @@ data class Setting(
     val value: String
 )
 
-object SettingsService {
+object Settings {
 
     private const val CONFIG_DIR_ENV = "BATARANG_CONF_DIR"
 
@@ -33,7 +34,7 @@ object SettingsService {
         ?: Paths.get(userHome, ".config", "batarang")
     private val configFile: Path = configDir.resolve("config.txt")
 
-    init {
+    fun update() {
         if (!exists(configDir)) {
             createDirectories(configDir)
         }
@@ -43,18 +44,30 @@ object SettingsService {
         val settings = readSettings()
         var settingsChanged = false
         val newSettings: List<String> = modules.flatMap { module ->
-            module.requiredSettings.map { requiredSetting ->
-                val key = requiredSetting.key
-                val absoluteKey = module.javaClass.simpleName + "." + key
-                if (settings.none { it.startsWith(absoluteKey) }) {
-                    settingsChanged = true
-                    print("Please enter ${requiredSetting.description}: ")
-                    val enteredValue = readLine()
-                    "$absoluteKey=$enteredValue"
-                } else {
-                    settings.first { it.startsWith(absoluteKey) }
+            if (isModuleActive(module)) {
+                val settingsForModule = module.requiredSettings.map { requiredSetting ->
+                    val key = requiredSetting.key
+                    val absoluteKey = module.javaClass.simpleName + "." + key
+                    if (settings.none { it.startsWith(absoluteKey) }) {
+                        settingsChanged = true
+                        print("Please enter ${requiredSetting.description}: ")
+                        val enteredValue = readLine()
+                        "$absoluteKey=$enteredValue"
+                    } else {
+                        settings.first { it.startsWith(absoluteKey) }
+                    }
                 }
-            }
+                module.updateSettings(
+                    settingsForModule.map { settingString ->
+                        val relativeSettingString = settingString.substringAfter(module.javaClass.simpleName + ".")
+                        Setting(
+                            key = module.requiredSettings.first { it.key == relativeSettingString.substringBefore("=") },
+                            value = relativeSettingString.substringAfter("=")
+                        )
+                    }
+                )
+                settingsForModule
+            } else emptyList()
         }
         if (settingsChanged) {
             writeSettings(newSettings)

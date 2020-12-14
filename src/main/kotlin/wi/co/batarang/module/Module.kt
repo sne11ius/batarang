@@ -6,7 +6,9 @@ import wi.co.batarang.SettingKey
 
 interface Module {
     fun setData(data: String)
-    fun updateData(settings: List<Setting>): String
-    fun getActions(settings: List<Setting>): List<Action>
+    fun updateData(): String
+    fun getActions(): List<Action>
+    fun updateSettings(settings: List<Setting>)
     val requiredSettings: List<SettingKey>
+    val canBeActivated: Boolean
 }

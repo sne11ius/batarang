@@ -20,6 +20,8 @@ data class RepositoryData(
 
 object BitbucketModule : Module {
 
+    private lateinit var settings: List<Setting>
+
     private val gitUrlKey = SettingKey("Bitbucket git-Basis-URL (e.g. 'myhost.com:1234')", "git-url")
     private val httpUrlKey = SettingKey("Bitbucket http-Basis-URL (e.g.. 'https://myhost.com')", "http-url")
     private val usernameKey = SettingKey("Bitbucket username", "username")
@@ -27,13 +29,15 @@ object BitbucketModule : Module {
 
     override val requiredSettings: List<SettingKey> = listOf(gitUrlKey, httpUrlKey, usernameKey, passwordKey)
 
+    override val canBeActivated = true
+
     private var repositories: List<RepositoryData> = emptyList()
 
     override fun setData(data: String) {
         repositories = mapper.readValue(data)
     }
 
-    override fun updateData(settings: List<Setting>): String {
+    override fun updateData(): String {
         val httpBaseUrl = settings.first { it.key == httpUrlKey }.value
         val username = settings.first { it.key == usernameKey }.value
         val password = settings.first { it.key == passwordKey }.value
@@ -43,7 +47,7 @@ object BitbucketModule : Module {
         return mapper.writeValueAsString(repoData)
     }
 
-    override fun getActions(settings: List<Setting>): List<Action> {
+    override fun getActions(): List<Action> {
         val gitBaseUrl = settings.first { it.key == gitUrlKey }.value
         val httpBaseUrl = settings.first { it.key == httpUrlKey }.value
         return repositories.flatMap {
@@ -62,5 +66,9 @@ object BitbucketModule : Module {
                 }
             )
         }
+    }
+
+    override fun updateSettings(settings: List<Setting>) {
+        this.settings = settings
     }
 }
