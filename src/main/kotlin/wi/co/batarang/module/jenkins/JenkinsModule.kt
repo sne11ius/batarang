@@ -5,9 +5,9 @@ import wi.co.batarang.Action
 import wi.co.batarang.Setting
 import wi.co.batarang.SettingKey
 import wi.co.batarang.module.Module
+import wi.co.batarang.module.launcher.LauncherModule.launch
 import wi.co.batarang.util.httpClient
 import wi.co.batarang.util.mapper
-import wi.co.batarang.util.runBackground
 import java.net.URI
 import java.net.http.HttpRequest
 import java.net.http.HttpRequest.BodyPublishers.noBody
@@ -16,7 +16,7 @@ import java.util.Base64
 
 object JenkinsModule : Module {
 
-    private val httpUrlKey = SettingKey("Jenkins-URL (bspw. 'https://myhost.com/jenkins')", "http-url")
+    private val httpUrlKey = SettingKey("Jenkins-URL (e.g. 'https://myhost.com/jenkins')", "http-url")
     private val usernameKey = SettingKey("Jenkins username", "username")
     private val tokenKey = SettingKey("Jenkins API-Token", "token")
 
@@ -59,7 +59,7 @@ object JenkinsModule : Module {
                     label = "[jenkins] BROWSE ${job.name}",
                     tags = listOf("jenkins", "browse", job.name, job.description, job.url)
                 ) {
-                    "xdg-open ${job.url}".runBackground()
+                    launch(job.url)
                 },
                 Action(
                     label = "[jenkins] RUN ${job.name}",

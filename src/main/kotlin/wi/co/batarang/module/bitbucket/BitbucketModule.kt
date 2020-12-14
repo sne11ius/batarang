@@ -5,6 +5,7 @@ import wi.co.batarang.Action
 import wi.co.batarang.Setting
 import wi.co.batarang.SettingKey
 import wi.co.batarang.module.Module
+import wi.co.batarang.module.launcher.LauncherModule.launch
 import wi.co.batarang.util.mapper
 import wi.co.batarang.util.runBackground
 
@@ -19,8 +20,8 @@ data class RepositoryData(
 
 object BitbucketModule : Module {
 
-    private val gitUrlKey = SettingKey("Bitbucket git-Basis-URL (bspw. 'myhost.com:1234')", "git-url")
-    private val httpUrlKey = SettingKey("Bitbucket http-Basis-URL (bspw. 'https://myhost.com')", "http-url")
+    private val gitUrlKey = SettingKey("Bitbucket git-Basis-URL (e.g. 'myhost.com:1234')", "git-url")
+    private val httpUrlKey = SettingKey("Bitbucket http-Basis-URL (e.g.. 'https://myhost.com')", "http-url")
     private val usernameKey = SettingKey("Bitbucket username", "username")
     private val passwordKey = SettingKey("Bitbucket password", "password")
 
@@ -57,7 +58,7 @@ object BitbucketModule : Module {
                     label = "[bitbucket] BROWSE ${it.projectKey}/${it.slug}",
                     tags = listOf("bitbucket", "browse", it.projectKey, it.slug, it.readme)
                 ) {
-                    "xdg-open ${it.mkWebUrl(httpBaseUrl)}".runBackground()
+                    launch(it.mkWebUrl(httpBaseUrl))
                 }
             )
         }
