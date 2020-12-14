@@ -1,0 +1,15 @@
+{
+  "resources":{
+  "includes":[
+    {"pattern":"\\QMETA-INF/services/kotlin.reflect.jvm.internal.impl.resolve.ExternalOverridabilityCondition\\E"}, 
+    {"pattern":"\\Qbigsnake-theme.properties\\E"}, 
+    {"pattern":"\\Qblaster-theme.properties\\E"}, 
+    {"pattern":"\\Qbusinessmachine-theme.properties\\E"}, 
+    {"pattern":"\\Qconqueror-theme.properties\\E"}, 
+    {"pattern":"\\Qdefault-theme.properties\\E"}, 
+    {"pattern":"\\Qdefrost-theme.properties\\E"}, 
+    {"pattern":"\\Qkotlin/collections/collections.kotlin_builtins\\E"}, 
+    {"pattern":"\\Qkotlin/kotlin.kotlin_builtins\\E"}
+  ]},
+  "bundles":[]
+}

@@ -1,8 +1,8 @@
 package wi.co.batarang.plugins.jenkins
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import wi.co.batarang.mapper
 import wi.co.batarang.util.httpClient
+import wi.co.batarang.util.mapper
 import java.net.URI
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers.ofString

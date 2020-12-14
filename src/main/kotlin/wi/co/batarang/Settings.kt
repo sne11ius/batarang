@@ -1,9 +1,17 @@
 package wi.co.batarang
 
-import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import wi.co.batarang.plugins.Plugin
+import wi.co.batarang.plugins.plugins
+import java.lang.System.getProperty
+import java.lang.System.getenv
+import java.nio.file.Files
+import java.nio.file.Files.createDirectories
+import java.nio.file.Files.exists
+import java.nio.file.Files.readAllLines
+import java.nio.file.Files.readString
+import java.nio.file.Files.writeString
+import java.nio.file.Path
+import java.nio.file.Paths
 
 data class SettingKey(
     val description: String,
@@ -15,12 +23,67 @@ data class Setting(
     val value: String
 )
 
-val mapper: ObjectMapper = ObjectMapper()
-    .registerModule(KotlinModule())
-    .disable(FAIL_ON_UNKNOWN_PROPERTIES)
-    // .disable(FAIL_ON_EMPTY_BEANS)
-    // .disable(FAIL_ON_MISSING_CREATOR_PROPERTIES)
-    // .disable(FAIL_ON_INVALID_SUBTYPE)
-    .enable(INDENT_OUTPUT)
-// .enable(WRITE_BIGDECIMAL_AS_PLAIN)
-// .enable(USE_BIG_DECIMAL_FOR_FLOATS)
+object SettingsService {
+
+    private const val CONFIG_DIR_ENV = "BATARANG_CONF_DIR"
+
+    private val userHome = getProperty("user.home")
+    private val configDir: Path = getenv(CONFIG_DIR_ENV)
+        ?.let { Paths.get(it) }
+        ?: Paths.get(userHome, ".config", "batarang")
+    private val configFile: Path = configDir.resolve("config.txt")
+
+    init {
+        if (!exists(configDir)) {
+            createDirectories(configDir)
+        }
+        if (!exists(configFile)) {
+            Files.createFile(configFile)
+        }
+        val settings = readSettings()
+        var settingsChanged = false
+        val newSettings: List<String> = plugins.flatMap { plugin ->
+            plugin.requiredSettings.map { requiredSetting ->
+                val key = requiredSetting.key
+                val absoluteKey = plugin.javaClass.simpleName + "." + key
+                if (settings.none { it.startsWith(absoluteKey) }) {
+                    settingsChanged = true
+                    print("Please enter ${requiredSetting.description}: ")
+                    val enteredValue = readLine()
+                    "$absoluteKey=$enteredValue"
+                } else {
+                    settings.first { it.startsWith(absoluteKey) }
+                }
+            }
+        }
+        if (settingsChanged) {
+            writeSettings(newSettings)
+        }
+    }
+
+    fun settingsForPlugin(plugin: Plugin): List<Setting> {
+        return plugin.requiredSettings.map { settingKey ->
+            val absoluteKey = plugin.javaClass.simpleName + "." + settingKey.key
+            Setting(
+                key = settingKey,
+                value = readSettings().first { it.startsWith(absoluteKey) }.substringAfter("=")
+            )
+        }
+    }
+
+    private fun readSettings(): List<String> {
+        return readAllLines(configFile)
+    }
+
+    private fun writeSettings(settings: List<String>) {
+        writeString(configFile, settings.joinToString("\n"))
+    }
+
+    fun readPluginData(plugin: Plugin): String {
+        return readString(configDir.resolve(plugin.javaClass.simpleName + ".txt"))
+    }
+
+    fun writePluginData(plugin: Plugin, pluginData: String) {
+        writeString(configDir.resolve(plugin.javaClass.simpleName + ".txt"), pluginData)
+    }
+}

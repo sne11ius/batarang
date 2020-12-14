@@ -40,6 +40,10 @@ A cli tool to easen the burden of everyday dev tasks
 ### More
 
 - Add more usefull stuff
+- Private Modules (like shell scripts)
+- Disable/Enable Modules
+- Confiurable launcher command instead of hard coded `xdg-open`
+- Rename `Plugin` -> `Module` since nothing regarding this stuff is dynamic
 
 ## Build
 

@@ -1,8 +1,8 @@
 package wi.co.batarang.plugins.bitbucket
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import wi.co.batarang.mapper
 import wi.co.batarang.util.httpClient
+import wi.co.batarang.util.mapper
 import java.net.URI
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers.ofString
@@ -101,6 +101,7 @@ class BitbucketApi(
             .values
             .flatMap { project ->
                 val reposUrl = project.repositoriesLink(baseUrl)
+
                 val getRequest = mkGet(reposUrl)
                 val response = httpClient.send(getRequest, ofString())
                 val reposResponse: RepositoriesListResponse = mapper.readValue(response.body())
@@ -128,7 +129,7 @@ class BitbucketApi(
     }
 
     // https://stackoverflow.com/a/54208946
-    private fun basicAuth(username: String, password: String): String? {
+    private fun basicAuth(username: String, password: String): String {
         return "Basic " + Base64.getEncoder().encodeToString("$username:$password".toByteArray())
     }
 }

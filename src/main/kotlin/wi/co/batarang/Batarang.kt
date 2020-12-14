@@ -15,9 +15,9 @@ import com.googlecode.lanterna.gui2.Window.Hint.NO_DECORATIONS
 import com.googlecode.lanterna.screen.TerminalScreen
 import com.googlecode.lanterna.terminal.ansi.UnixTerminal
 import wi.co.batarang.plugins.plugins
-import wi.co.batarang.service.SettingsService
 import kotlin.system.exitProcess
 
+@Suppress("TooGenericExceptionCaught")
 fun main(args: Array<String>) {
     if ("-h" in args) {
         printHelpAndExit()
@@ -29,11 +29,8 @@ fun main(args: Array<String>) {
 
     if ("---generate-Native-Image-Config" in args) {
         // Use as much stuff as possible to generate data for graalvm
-        // val terminal = UnixTerminal()
-        // val screen = TerminalScreen(terminal)
-        // screen.startScreen()
-        // screen.stopScreen(false)
-        // updatePluginData()
+        // Hence no `exitProcess`
+        updatePluginData()
     }
     runGui(args)
 }
@@ -91,7 +88,7 @@ fun buildLayout(args: Array<String>, allActions: List<Action>) {
     val textBox = TextBox(TerminalSize(60, 1))
 
     val actionList = ActionListBox(TerminalSize(65, 20))
-    actionList.addItem("...", Runnable {})
+    actionList.addItem("...") {}
     actionList.layoutData = GridLayout.createLayoutData(
         BEGINNING,
         BEGINNING,
@@ -104,7 +101,7 @@ fun buildLayout(args: Array<String>, allActions: List<Action>) {
         val actions = allActions.filter { it.matches(newText.split(" ")) }
         actionList.clearItems()
         if (actions.isEmpty()) {
-            actionList.addItem("...", Runnable {})
+            actionList.addItem("...") {}
         } else {
             actions.forEach { action ->
                 actionList.addItem(action.label) {

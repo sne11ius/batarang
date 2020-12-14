@@ -4,9 +4,9 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import wi.co.batarang.Action
 import wi.co.batarang.Setting
 import wi.co.batarang.SettingKey
-import wi.co.batarang.mapper
 import wi.co.batarang.plugins.Plugin
 import wi.co.batarang.util.httpClient
+import wi.co.batarang.util.mapper
 import wi.co.batarang.util.runBackground
 import java.net.URI
 import java.net.http.HttpRequest
@@ -53,28 +53,18 @@ object JenkinsPlugin : Plugin {
                 .build()
         }
 
-        fun mkGet(url: String): HttpRequest {
-            return HttpRequest.newBuilder(URI(url))
-                .GET()
-                .header("Authorization", basicAuth())
-                .build()
-        }
-
         return jobs.flatMap { job ->
             listOf(
                 Action(
                     label = "[jenkins] BROWSE ${job.name}",
-                    strings = listOf("jenkins", "browse", job.name, job.description, job.url)
+                    tags = listOf("jenkins", "browse", job.name, job.description, job.url)
                 ) {
                     "xdg-open ${job.url}".runBackground()
                 },
                 Action(
                     label = "[jenkins] RUN ${job.name}",
-                    strings = listOf("jenkins", "run", job.name, job.description, job.url)
+                    tags = listOf("jenkins", "run", job.name, job.description, job.url)
                 ) {
-                    data class CrumbResponse(
-                        val crumb: String
-                    )
                     val request = mkPost(job.url + "/build")
                     httpClient.send(request, ofString())
                 }

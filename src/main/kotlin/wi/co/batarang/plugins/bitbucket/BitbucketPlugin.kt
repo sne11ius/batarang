@@ -4,8 +4,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import wi.co.batarang.Action
 import wi.co.batarang.Setting
 import wi.co.batarang.SettingKey
-import wi.co.batarang.mapper
 import wi.co.batarang.plugins.Plugin
+import wi.co.batarang.util.mapper
 import wi.co.batarang.util.runBackground
 
 data class RepositoryData(
@@ -49,13 +49,13 @@ object BitbucketPlugin : Plugin {
             listOf(
                 Action(
                     label = "[bitbucket] CLONE ${it.projectKey}/${it.slug}",
-                    strings = listOf("bitbucket", "clone", it.projectKey, it.slug, it.readme)
+                    tags = listOf("bitbucket", "clone", it.projectKey, it.slug, it.readme)
                 ) {
                     "git clone ${it.mkCloneUrl(gitBaseUrl)}".runBackground()
                 },
                 Action(
                     label = "[bitbucket] BROWSE ${it.projectKey}/${it.slug}",
-                    strings = listOf("bitbucket", "browse", it.projectKey, it.slug, it.readme)
+                    tags = listOf("bitbucket", "browse", it.projectKey, it.slug, it.readme)
                 ) {
                     "xdg-open ${it.mkWebUrl(httpBaseUrl)}".runBackground()
                 }

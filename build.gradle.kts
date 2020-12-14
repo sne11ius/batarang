@@ -42,9 +42,9 @@ tasks {
 }
 
 nativeImage {
-    graalVmHome = getenv("JAVA_HOME")
+    graalVmHome = getenv("JAVA_HOME") ?: "Please set proper JAVA_HOME"
     mainClass = "wi.co.batarang.BatarangKt"
-    executableName = "batarang"
+    executableName = "bat"
     outputDirectory = File("$buildDir")
     arguments(
         "--no-fallback",
