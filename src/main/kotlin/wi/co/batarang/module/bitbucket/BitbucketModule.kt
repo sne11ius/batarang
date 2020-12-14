@@ -1,10 +1,10 @@
-package wi.co.batarang.plugins.bitbucket
+package wi.co.batarang.module.bitbucket
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import wi.co.batarang.Action
 import wi.co.batarang.Setting
 import wi.co.batarang.SettingKey
-import wi.co.batarang.plugins.Plugin
+import wi.co.batarang.module.Module
 import wi.co.batarang.util.mapper
 import wi.co.batarang.util.runBackground
 
@@ -17,7 +17,7 @@ data class RepositoryData(
     fun mkWebUrl(httpBaseUrl: String): String = "$httpBaseUrl/projects/$projectKey/repos/$slug/browse"
 }
 
-object BitbucketPlugin : Plugin {
+object BitbucketModule : Module {
 
     private val gitUrlKey = SettingKey("Bitbucket git-Basis-URL (bspw. 'myhost.com:1234')", "git-url")
     private val httpUrlKey = SettingKey("Bitbucket http-Basis-URL (bspw. 'https://myhost.com')", "http-url")

@@ -14,7 +14,7 @@ import com.googlecode.lanterna.gui2.Window.Hint.CENTERED
 import com.googlecode.lanterna.gui2.Window.Hint.NO_DECORATIONS
 import com.googlecode.lanterna.screen.TerminalScreen
 import com.googlecode.lanterna.terminal.ansi.UnixTerminal
-import wi.co.batarang.plugins.plugins
+import wi.co.batarang.module.modules
 import kotlin.system.exitProcess
 
 @Suppress("TooGenericExceptionCaught")
@@ -23,14 +23,14 @@ fun main(args: Array<String>) {
         printHelpAndExit()
     }
     if ("-u" in args) {
-        updatePluginData()
+        updateModuleData()
         exitProcess(0)
     }
 
     if ("---generate-Native-Image-Config" in args) {
         // Use as much stuff as possible to generate data for graalvm
         // Hence no `exitProcess`
-        updatePluginData()
+        updateModuleData()
     }
     runGui(args)
 }
@@ -50,10 +50,10 @@ fun printHelpAndExit() {
 }
 
 private fun runGui(args: Array<String>) {
-    val allActions = plugins.flatMap { plugin ->
-        plugin.setData(SettingsService.readPluginData(plugin))
-        val settingsForPlugin = SettingsService.settingsForPlugin(plugin)
-        plugin.getActions(settingsForPlugin)
+    val allActions = modules.flatMap { module ->
+        module.setData(SettingsService.readModuleData(module))
+        val settingsForModule = SettingsService.settingsForModule(module)
+        module.getActions(settingsForModule)
     }
     val immediateActions = allActions.filter { it.matches(args.toList()) }
     if (immediateActions.size == 1) {
@@ -127,11 +127,11 @@ fun buildLayout(args: Array<String>, allActions: List<Action>) {
     textGUI.addWindowAndWait(window)
 }
 
-private fun updatePluginData() {
-    plugins.forEach { plugin ->
-        println("Aktualisiere Daten für ${plugin.javaClass.simpleName}")
-        val pluginSettings = SettingsService.settingsForPlugin(plugin)
-        val pluginData = plugin.updateData(pluginSettings)
-        SettingsService.writePluginData(plugin, pluginData)
+private fun updateModuleData() {
+    modules.forEach { module ->
+        println("Aktualisiere Daten für ${module.javaClass.simpleName}")
+        val moduleSettings = SettingsService.settingsForModule(module)
+        val moduleData = module.updateData(moduleSettings)
+        SettingsService.writeModuleData(module, moduleData)
     }
 }

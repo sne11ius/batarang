@@ -1,4 +1,4 @@
-package wi.co.batarang.plugins.jenkins
+package wi.co.batarang.module.jenkins
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import wi.co.batarang.util.httpClient

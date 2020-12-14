@@ -1,7 +1,7 @@
 package wi.co.batarang
 
-import wi.co.batarang.plugins.Plugin
-import wi.co.batarang.plugins.plugins
+import wi.co.batarang.module.Module
+import wi.co.batarang.module.modules
 import java.lang.System.getProperty
 import java.lang.System.getenv
 import java.nio.file.Files
@@ -42,10 +42,10 @@ object SettingsService {
         }
         val settings = readSettings()
         var settingsChanged = false
-        val newSettings: List<String> = plugins.flatMap { plugin ->
-            plugin.requiredSettings.map { requiredSetting ->
+        val newSettings: List<String> = modules.flatMap { module ->
+            module.requiredSettings.map { requiredSetting ->
                 val key = requiredSetting.key
-                val absoluteKey = plugin.javaClass.simpleName + "." + key
+                val absoluteKey = module.javaClass.simpleName + "." + key
                 if (settings.none { it.startsWith(absoluteKey) }) {
                     settingsChanged = true
                     print("Please enter ${requiredSetting.description}: ")
@@ -61,9 +61,9 @@ object SettingsService {
         }
     }
 
-    fun settingsForPlugin(plugin: Plugin): List<Setting> {
-        return plugin.requiredSettings.map { settingKey ->
-            val absoluteKey = plugin.javaClass.simpleName + "." + settingKey.key
+    fun settingsForModule(module: Module): List<Setting> {
+        return module.requiredSettings.map { settingKey ->
+            val absoluteKey = module.javaClass.simpleName + "." + settingKey.key
             Setting(
                 key = settingKey,
                 value = readSettings().first { it.startsWith(absoluteKey) }.substringAfter("=")
@@ -79,11 +79,11 @@ object SettingsService {
         writeString(configFile, settings.joinToString("\n"))
     }
 
-    fun readPluginData(plugin: Plugin): String {
-        return readString(configDir.resolve(plugin.javaClass.simpleName + ".txt"))
+    fun readModuleData(module: Module): String {
+        return readString(configDir.resolve(module.javaClass.simpleName + ".txt"))
     }
 
-    fun writePluginData(plugin: Plugin, pluginData: String) {
-        writeString(configDir.resolve(plugin.javaClass.simpleName + ".txt"), pluginData)
+    fun writeModuleData(module: Module, moduleData: String) {
+        writeString(configDir.resolve(module.javaClass.simpleName + ".txt"), moduleData)
     }
 }

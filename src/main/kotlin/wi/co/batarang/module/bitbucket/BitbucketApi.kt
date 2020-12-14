@@ -1,4 +1,4 @@
-package wi.co.batarang.plugins.bitbucket
+package wi.co.batarang.module.bitbucket
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import wi.co.batarang.util.httpClient

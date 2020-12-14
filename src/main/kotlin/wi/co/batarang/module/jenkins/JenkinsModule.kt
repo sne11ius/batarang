@@ -1,10 +1,10 @@
-package wi.co.batarang.plugins.jenkins
+package wi.co.batarang.module.jenkins
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import wi.co.batarang.Action
 import wi.co.batarang.Setting
 import wi.co.batarang.SettingKey
-import wi.co.batarang.plugins.Plugin
+import wi.co.batarang.module.Module
 import wi.co.batarang.util.httpClient
 import wi.co.batarang.util.mapper
 import wi.co.batarang.util.runBackground
@@ -14,7 +14,7 @@ import java.net.http.HttpRequest.BodyPublishers.noBody
 import java.net.http.HttpResponse.BodyHandlers.ofString
 import java.util.Base64
 
-object JenkinsPlugin : Plugin {
+object JenkinsModule : Module {
 
     private val httpUrlKey = SettingKey("Jenkins-URL (bspw. 'https://myhost.com/jenkins')", "http-url")
     private val usernameKey = SettingKey("Jenkins username", "username")

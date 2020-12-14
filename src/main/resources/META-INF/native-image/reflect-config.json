@@ -319,76 +319,76 @@
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
 },
 {
-  "name":"wi.co.batarang.plugins.bitbucket.Href",
+  "name":"wi.co.batarang.module.bitbucket.Href",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allDeclaredConstructors":true
 },
 {
-  "name":"wi.co.batarang.plugins.bitbucket.Line",
+  "name":"wi.co.batarang.module.bitbucket.Line",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allDeclaredConstructors":true
 },
 {
-  "name":"wi.co.batarang.plugins.bitbucket.ProjectLinksResponse",
+  "name":"wi.co.batarang.module.bitbucket.ProjectLinksResponse",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allDeclaredConstructors":true
 },
 {
-  "name":"wi.co.batarang.plugins.bitbucket.ProjectResponse",
+  "name":"wi.co.batarang.module.bitbucket.ProjectResponse",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allDeclaredConstructors":true
 },
 {
-  "name":"wi.co.batarang.plugins.bitbucket.ProjectsListResponse",
+  "name":"wi.co.batarang.module.bitbucket.ProjectsListResponse",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allDeclaredConstructors":true
 },
 {
-  "name":"wi.co.batarang.plugins.bitbucket.ReadmeResponse",
+  "name":"wi.co.batarang.module.bitbucket.ReadmeResponse",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allDeclaredConstructors":true
 },
 {
-  "name":"wi.co.batarang.plugins.bitbucket.RepositoriesListResponse",
+  "name":"wi.co.batarang.module.bitbucket.RepositoriesListResponse",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allDeclaredConstructors":true
 },
 {
-  "name":"wi.co.batarang.plugins.bitbucket.Repository"
+  "name":"wi.co.batarang.module.bitbucket.Repository"
 },
 {
-  "name":"wi.co.batarang.plugins.bitbucket.RepositoryData",
+  "name":"wi.co.batarang.module.bitbucket.RepositoryData",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allDeclaredConstructors":true
 },
 {
-  "name":"wi.co.batarang.plugins.bitbucket.RepositoryResponse",
+  "name":"wi.co.batarang.module.bitbucket.RepositoryResponse",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allDeclaredConstructors":true
 },
 {
-  "name":"wi.co.batarang.plugins.jenkins.Job",
+  "name":"wi.co.batarang.module.jenkins.Job",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allDeclaredConstructors":true
 },
 {
-  "name":"wi.co.batarang.plugins.jenkins.JobDetails",
+  "name":"wi.co.batarang.module.jenkins.JobDetails",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allDeclaredConstructors":true
 },
 {
-  "name":"wi.co.batarang.plugins.jenkins.ListAllRespnse",
+  "name":"wi.co.batarang.module.jenkins.ListAllRespnse",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allDeclaredConstructors":true
