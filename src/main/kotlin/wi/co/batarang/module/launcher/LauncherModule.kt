@@ -31,8 +31,8 @@ object LauncherModule : Module {
         return emptyList()
     }
 
+    @Suppress("TooGenericExceptionThrown")
     fun launch(thing: String) {
         launchCommand?.replace("{}", thing)?.runBackground() ?: throw RuntimeException("Launch command not set")
     }
-
 }
