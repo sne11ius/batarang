@@ -47,11 +47,26 @@ might wonder why you need a task runner to run shell scripts if you already have
 ### Prerequsites
 
 - graalvm 20.3.0 (openjdk 11)
-- Build and local install the latest `release/3.1` branch of lanterna
+- Build and local install the latest `release/3.1` branch of
+  [lanterna](https://github.com/mabe02/lanterna)
+
+If you plan to contribute, please install commit hook via
+
+`./gradlew install-pre-commit-hook`
 
 ### Build batarang
 
-see `rebuild.sh`
+#### Fat jar
+
+`./gradlew shadowJar`
+
+#### Native image
+
+`./gradlew nativeImage`
+
+#### Update graalvm configurations
+
+see [`rebuild.sh`](rebuild.sh)
 
 ## License
 

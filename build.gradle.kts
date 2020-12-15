@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.js.dce.InputResource.Companion.file
 import java.util.concurrent.TimeUnit.MINUTES
 
 plugins {
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "1.4.21"
     id("org.mikeneck.graalvm-native-image") version "v0.9.1"
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
@@ -88,7 +88,6 @@ yamlValidator {
 }
 
 task("install-pre-commit-hook") {
-    dependsOn("validateYaml")
     doLast {
         val commitHookScript =
             """
@@ -103,6 +102,7 @@ task("install-pre-commit-hook") {
 }
 
 task("validate-pre-commit") {
+    dependsOn("validateYaml")
     doLast {
         val isWindows = System.getProperty("os.name").toLowerCase().contains("windows")
         val failWith: ((GradleException) -> Unit) = {
