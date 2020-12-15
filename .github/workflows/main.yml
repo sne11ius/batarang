@@ -138,12 +138,25 @@ jobs:
 
       - name: 'Build Linux Image'
         run: |
-          native-image --no-server --no-fallback --allow-incomplete-classpath -jar bat-${{env.VERSION}}.jar
+          native-image --no-server --no-fallback --allow-incomplete-classpath -jar batarang-${{env.VERSION}}-all.jar
+
+      - name : Print debug info
+        if: contains(github.ref, 'v')
+        run: |
+          ls -l /home/runner/work/batarang; ls -l /home/runner/work/batarang/batarang
 
       - name: Compress binaries
         uses: svenstaro/upx-action@v2
         with:
-          file: bat-${{env.VERSION}}
+          file: bat
+
+      - name : Print debug info
+        if: contains(github.ref, 'v')
+        run: |
+          ls -l /home/runner/work/batarang; ls -l /home/runner/work/batarang/batarang
+
+      - name: Rename binary
+        run: mv bat bat-${{env.VERSION}}
 
       - name: 'Publish Linux Image'
         if: success()
