@@ -138,29 +138,14 @@ jobs:
         run: |
           echo "UPLOAD_URL=$(cat upload_url.txt)" >> $GITHUB_ENV
 
-      - name : Print debug info
-        if: contains(github.ref, 'v')
-        run: |
-          ls -l /home/runner/work/batarang; ls -l /home/runner/work/batarang/batarang
-
       - name: 'Build Native Image'
         run: |
           native-image --no-server --no-fallback --allow-incomplete-classpath -jar batarang-${{env.VERSION}}-all.jar
-
-      - name : Print debug info
-        if: contains(github.ref, 'v')
-        run: |
-          ls -l /home/runner/work/batarang; ls -l /home/runner/work/batarang/batarang
 
       - name: Compress binaries
         uses: svenstaro/upx-action@v2
         with:
           file: batarang-0.1-all
-
-      - name : Print debug info
-        if: contains(github.ref, 'v')
-        run: |
-          ls -l /home/runner/work/batarang; ls -l /home/runner/work/batarang/batarang
 
       - name: Rename binary
         run: mv batarang-${{env.VERSION}}-all bat
