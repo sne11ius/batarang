@@ -131,6 +131,12 @@ jobs:
         run: |
           echo "UPLOAD_URL=$(cat upload_url.txt)" >> $GITHUB_ENV
 
+      -name : Print debug info
+        if: contains(github.ref, 'v')
+          run: |
+            ls -l /home/runner/work/batarang
+            ls -la /home/runner/work/batarang/batarang
+
       - name: 'Build Linux Image'
         run: |
           native-image --no-server --no-fallback --allow-incomplete-classpath -jar bat-${{env.VERSION}}.jar
