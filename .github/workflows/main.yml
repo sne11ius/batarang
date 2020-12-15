@@ -134,8 +134,7 @@ jobs:
       -name : Print debug info
         if: contains(github.ref, 'v')
           run: |
-            ls -l /home/runner/work/batarang
-            ls -la /home/runner/work/batarang/batarang
+            ls -l /home/runner/work/batarang; ls -la /home/runner/work/batarang/batarang
 
       - name: 'Build Linux Image'
         run: |
