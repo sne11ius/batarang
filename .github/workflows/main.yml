@@ -88,3 +88,68 @@ jobs:
         with:
           name: 'upload_url.txt'
           path: 'upload_url.txt'
+
+  build-linux-image:
+    needs: [ build-jar ]
+    name: 'Build Linux Image'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2'
+
+      - name: 'Setup Java 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: 'Setup GraalVM Environment'
+        uses: DeLaGuardo/setup-graalvm@2.0
+        with:
+          graalvm-version: '20.3.0.java11'
+
+      - name: 'Install Native Image Plugin'
+        run: |
+          gu install native-image
+
+      - name: Get version number
+        run: |
+          echo "VERSION=$(./gradlew properties -q | grep "version:" | awk '{print $2}')" >> $GITHUB_ENV
+
+      - name: 'Get JAR Artifact'
+        uses: actions/download-artifact@v2-preview
+        with:
+          name: 'bat-${{env.VERSION}}.jar'
+
+      - name: 'Download Release URL'
+        if: contains(github.ref, 'v')
+        uses: actions/download-artifact@v2-preview
+        with:
+          name: 'upload_url.txt'
+
+      - name: 'Set Upload URL Env Var'
+        if: contains(github.ref, 'v')
+        run: |
+          echo "UPLOAD_URL=$(cat upload_url.txt)" >> $GITHUB_ENV
+
+      - name: 'Build Linux Image'
+        run: |
+          native-image --no-server --no-fallback --allow-incomplete-classpath -jar bat-${{env.VERSION}}.jar
+
+      - name: 'Publish Linux Image'
+        if: success()
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: 'bat-${{env.VERSION}}-linux'
+          path: 'bat-${{env.VERSION}}-all'
+
+      - name: 'Upload Linux Image Asset'
+        if: success() && contains(github.ref, 'v')
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ env.UPLOAD_URL }}
+          asset_name: 'bat-${{env.VERSION}}-linux'
+          asset_path: 'bat-${{env.VERSION}}'
+          asset_content_type: application/octet-stream
