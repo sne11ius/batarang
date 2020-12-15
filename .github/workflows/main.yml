@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/checkout@v2
         with:
-          name: mabe02/lanterna
+          repository: mabe02/lanterna
           ref: refs/release/3.1
           path: lanterna
       
