@@ -89,10 +89,17 @@ jobs:
           name: 'upload_url.txt'
           path: 'upload_url.txt'
 
-  build-linux-image:
+  build-non-windows-image:
     needs: [ build-jar ]
-    name: 'Build Linux Image'
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ 'ubuntu-latest', 'macos-latest' ]
+        include:
+          - os: 'ubuntu-latest'
+            label: 'linux'
+          - os: 'macos-latest'
+            label: 'osx'
+    runs-on: ${{matrix.os}}
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v2
@@ -136,7 +143,7 @@ jobs:
         run: |
           ls -l /home/runner/work/batarang; ls -l /home/runner/work/batarang/batarang
 
-      - name: 'Build Linux Image'
+      - name: 'Build Native Image'
         run: |
           native-image --no-server --no-fallback --allow-incomplete-classpath -jar batarang-${{env.VERSION}}-all.jar
 
@@ -158,11 +165,11 @@ jobs:
       - name: Rename binary
         run: mv batarang-${{env.VERSION}}-all bat
 
-      - name: 'Publish Linux Image'
+      - name: 'Publish Native Image'
         if: success()
         uses: actions/upload-artifact@v2-preview
         with:
-          name: 'bat-linux'
+          name: 'bat-${{matrix-label}}'
           path: 'bat'
 
       - name: 'Upload Linux Image Asset'
@@ -173,6 +180,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ env.UPLOAD_URL }}
-          asset_name: 'bat-linux'
+          asset_name: 'bat-${{matrix-label}}'
           asset_path: 'bat'
           asset_content_type: application/octet-stream
