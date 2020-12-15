@@ -30,6 +30,10 @@ The jenkins meodule can index the jobs in a single jenkins installation.
 - Run a job
 - Browse a job
 
+## Demo run
+
+[![asciicast](https://asciinema.org/a/379452.svg)](https://asciinema.org/a/379452)
+
 ## Todo
 
 ### RobinModule
@@ -37,10 +41,6 @@ The jenkins meodule can index the jobs in a single jenkins installation.
 The RobinModule will support external task definitions e.g. shell scripts. You
 might wonder why you need a task runner to run shell scripts if you already have
 ... a shell. Well, don't ask me :D
-
-## Demo run
-
-[![asciicast](https://asciinema.org/a/379452.svg)](https://asciinema.org/a/379452)
 
 ## Build
 
