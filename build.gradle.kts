@@ -11,6 +11,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
     id("io.gitlab.arturbosch.detekt") version "1.14.2"
+    id("at.zierler.yamlvalidator") version "1.5.0"
 }
 
 group = "wi.co"
@@ -80,7 +81,14 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+yamlValidator {
+    searchPaths = listOf(".")
+    setAllowDuplicates(false)
+    setSearchRecursive(true)
+}
+
 task("install-pre-commit-hook") {
+    dependsOn("validateYaml")
     doLast {
         val commitHookScript =
             """

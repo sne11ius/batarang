@@ -1,14 +1,6 @@
 name: CI
 
-on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+on: [push, pull_request]
 
 jobs:
   build-jar:
@@ -56,7 +48,7 @@ jobs:
       - name: Publish fat jar
         uses: actions/upload-artifact@v2-preview
         with:
-          name: cat-${{ env.VERSION }}.jar
+          name: bat.jar
           path: build/libs/*-all.jar
 
       - name: 'Create Release'
@@ -82,7 +74,7 @@ jobs:
         with:
           upload_url: ${{steps.create_release.outputs.upload_url}}
           asset_path: build/libs/batarang-${{env.VERSION}}-all.jar
-          asset_name: cat-${{ env.VERSION }}.jar
+          asset_name: bat.jar
           asset_content_type: application/java-archive
 
       - name: 'Write Upload URL To File'
@@ -96,3 +88,159 @@ jobs:
         with:
           name: 'upload_url.txt'
           path: 'upload_url.txt'
+
+  build-non-windows-image:
+    needs: [ build-jar ]
+    strategy:
+      matrix:
+        os: [ 'ubuntu-latest', 'macos-latest' ]
+        include:
+          - os: 'ubuntu-latest'
+            label: 'linux'
+          - os: 'macos-latest'
+            label: 'osx'
+    runs-on: ${{matrix.os}}
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+
+      - name: 'Setup Java 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: 'Setup GraalVM Environment'
+        uses: DeLaGuardo/setup-graalvm@3.0
+        with:
+          graalvm-version: '20.3.0.java11'
+
+      - name: 'Install Native Image Plugin'
+        run: |
+          gu install native-image
+
+      - name: Get version number
+        run: |
+          echo "VERSION=$(./gradlew properties -q | grep "version:" | awk '{print $2}')" >> $GITHUB_ENV
+
+      - name: 'Get JAR Artifact'
+        uses: actions/download-artifact@v2-preview
+        with:
+          name: 'bat.jar'
+
+      - name: 'Download Release URL'
+        if: contains(github.ref, 'v')
+        uses: actions/download-artifact@v2-preview
+        with:
+          name: 'upload_url.txt'
+
+      - name: 'Set Upload URL Env Var'
+        if: contains(github.ref, 'v')
+        run: |
+          echo "UPLOAD_URL=$(cat upload_url.txt)" >> $GITHUB_ENV
+
+      - name: 'Build Native Image'
+        run: |
+          native-image --no-server --no-fallback --allow-incomplete-classpath -jar batarang-${{env.VERSION}}-all.jar
+
+      - name: Compress binaries
+        uses: svenstaro/upx-action@v2
+        with:
+          file: batarang-${{env.VERSION}}-all
+
+      - name: Rename binary
+        run: mv batarang-${{env.VERSION}}-all bat
+
+      - name: 'Publish Native Image'
+        if: success()
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: 'bat-${{matrix.label}}'
+          path: 'bat'
+
+      - name: 'Upload Linux Image Asset'
+        if: success() && contains(github.ref, 'v')
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ env.UPLOAD_URL }}
+          asset_name: 'bat-${{matrix.label}}'
+          asset_path: 'bat'
+          asset_content_type: application/octet-stream
+
+  build-windows-image:
+    needs: [ build-jar ]
+    name: 'Build Windows Image'
+    runs-on: windows-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v1
+
+      - name: 'Download GraalVM'
+        run: |
+          Invoke-RestMethod -Uri https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.3.0/graalvm-ce-java11-windows-amd64-20.3.0.zip -OutFile 'graal.zip'
+
+      - name: 'Install GraalVM'
+        run: |
+          Expand-Archive -path 'graal.zip' -destinationpath '.'
+
+      - name: 'Install Native Image'
+        run: |
+          graalvm-ce-java11-20.3.0\bin\gu.cmd install native-image
+
+      - name: 'Set up Visual C Build Tools Workload for Visual Studio 2017 Build Tools'
+        run: |
+          choco install visualstudio2017-workload-vctools
+
+      - name: 'Get Version Number'
+        run: |
+          echo "VERSION=$(./gradlew properties -q | grep "version:" | awk '{print $2}')" >> $GITHUB_ENV
+        shell: bash
+      - name: 'Get JAR Artifact'
+        uses: actions/download-artifact@v2-preview
+        with:
+          name: 'bat.jar'
+
+      - name: 'Build Native Image'
+        shell: cmd
+        env:
+          JAVA_HOME: ./graalvm-ce-java11-20.1.0
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+          ./graalvm-ce-java11-20.3.0/bin/native-image --no-server --no-fallback --allow-incomplete-classpath -jar batarang-${{env.VERSION}}-all.jar
+
+      - name: Compress binaries
+        uses: svenstaro/upx-action@v2
+        with:
+          file: batarang-0.1-all.exe
+
+      - name: 'Get Release URL'
+        if: contains(github.ref, 'v')
+        uses: actions/download-artifact@v2-preview
+        with:
+          name: 'upload_url.txt'
+
+      - name: 'Set Upload URL Env Var'
+        if: contains(github.ref, 'v')
+        run: |
+          echo "UPLOAD_URL=$(cat upload_url.txt)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: 'Publish Windows Image'
+        if: success()
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: 'bat-windows.exe'
+          path: 'batarang-${{env.VERSION}}-all.exe'
+      - name: 'Release Windows Image Asset'
+        if: success() && contains(github.ref, 'v')
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          upload_url: ${{env.UPLOAD_URL}}
+          asset_name: 'bat-windows.exe'
+          asset_path: 'batarang-${{env.VERSION}}-all.exe'
+          asset_content_type: application/octet-stream
