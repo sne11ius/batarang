@@ -52,7 +52,7 @@ fun printHelpAndExit() {
 }
 
 private fun runGui(args: Array<String>) {
-    val allActions = modules.flatMap { module ->
+    val allActions = modules.filter { isModuleActive(it) }.flatMap { module ->
         module.setData(Settings.readModuleData(module))
         module.getActions()
     }

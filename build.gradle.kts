@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "wi.co"
-version = "0.1"
+version = "0.2"
 java.sourceCompatibility = VERSION_11
 
 repositories {

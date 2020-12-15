@@ -38,9 +38,9 @@ The RobinModule will support external task definitions e.g. shell scripts. You
 might wonder why you need a task runner to run shell scripts if you already have
 ... a shell. Well, don't ask me :D
 
-### Promo
+## Demo run
 
-Record demo sessions via https://asciinema.org/. Or at least add screenshots.
+[![asciicast](https://asciinema.org/a/379452.svg)](https://asciinema.org/a/379452)
 
 ## Build
 
