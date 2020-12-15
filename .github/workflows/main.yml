@@ -56,6 +56,6 @@ jobs:
       - name: Publish fat jar
         uses: actions/upload-artifact@v2-preview
         with:
-          name: cat-$VERSION.jar
+          name: cat-${{ env.VERSION }}.jar
           path: build/libs/*-all.jar
 
