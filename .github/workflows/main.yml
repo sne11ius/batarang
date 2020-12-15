@@ -148,7 +148,7 @@ jobs:
       - name: Compress binaries
         uses: svenstaro/upx-action@v2
         with:
-          file: bat
+          file: batarang-0.1-all
 
       - name : Print debug info
         if: contains(github.ref, 'v')
@@ -156,14 +156,14 @@ jobs:
           ls -l /home/runner/work/batarang; ls -l /home/runner/work/batarang/batarang
 
       - name: Rename binary
-        run: mv bat bat-${{env.VERSION}}
+        run: mv bat-${{env.VERSION}} bat
 
       - name: 'Publish Linux Image'
         if: success()
         uses: actions/upload-artifact@v2-preview
         with:
-          name: 'bat-${{env.VERSION}}-linux'
-          path: 'bat-${{env.VERSION}}'
+          name: 'bat-linux'
+          path: 'bat'
 
       - name: 'Upload Linux Image Asset'
         if: success() && contains(github.ref, 'v')
@@ -173,6 +173,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ env.UPLOAD_URL }}
-          asset_name: 'bat-${{env.VERSION}}-linux'
-          asset_path: 'bat-${{env.VERSION}}'
+          asset_name: 'bat-linux'
+          asset_path: 'bat'
           asset_content_type: application/octet-stream
