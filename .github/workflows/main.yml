@@ -48,7 +48,7 @@ jobs:
       - name: Publish fat jar
         uses: actions/upload-artifact@v2-preview
         with:
-          name: bat-${{ env.VERSION }}.jar
+          name: bat.jar
           path: build/libs/*-all.jar
 
       - name: 'Create Release'
@@ -74,7 +74,7 @@ jobs:
         with:
           upload_url: ${{steps.create_release.outputs.upload_url}}
           asset_path: build/libs/batarang-${{env.VERSION}}-all.jar
-          asset_name: bat-${{ env.VERSION }}.jar
+          asset_name: bat.jar
           asset_content_type: application/java-archive
 
       - name: 'Write Upload URL To File'
@@ -118,7 +118,7 @@ jobs:
       - name: 'Get JAR Artifact'
         uses: actions/download-artifact@v2-preview
         with:
-          name: 'bat-${{env.VERSION}}.jar'
+          name: 'bat.jar'
 
       - name: 'Download Release URL'
         if: contains(github.ref, 'v')
