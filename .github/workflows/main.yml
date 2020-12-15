@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-jar:
+    name: 'Build fat jar'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          name: mabe02/lanterna
+          ref: refs/release/3.1
+          path: lanterna
+      
+      - name: Setup Java 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Install lanterna
+        run: mvn -f lanterna/pom.xml install -Dmaven.test.skip=true
+
+      - name: Build fat jar
+        run: |
+          ./gradlew shadowJar
