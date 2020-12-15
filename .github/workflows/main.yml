@@ -135,12 +135,17 @@ jobs:
         run: |
           native-image --no-server --no-fallback --allow-incomplete-classpath -jar bat-${{env.VERSION}}.jar
 
+      - name: Compress binaries
+        uses: svenstaro/upx-action@v2
+        with:
+          file: bat-${{env.VERSION}}
+
       - name: 'Publish Linux Image'
         if: success()
         uses: actions/upload-artifact@v2-preview
         with:
           name: 'bat-${{env.VERSION}}-linux'
-          path: 'bat-${{env.VERSION}}-all'
+          path: 'bat-${{env.VERSION}}'
 
       - name: 'Upload Linux Image Asset'
         if: success() && contains(github.ref, 'v')
