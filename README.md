@@ -1,46 +1,46 @@
 # batarang
 
-A cli tool to easen the burden of everyday dev tasks
-
-## Up next
-
-### CI prerequisites
-
-- Allow settings-overrides via ENV
-- Use settings-overrides & dummy server to generate native-image configurations
-  during integration build
-
-### CI
-
-- https://blogs.oracle.com/developers/building-cross-platform-native-images-with-graalvm
-- include upx in builds
-- final executable shoud be `bat`
-
-### Code quality
-
-- Refactor
-- Integrate ktlint & detekt
-
-### Promo
-
-- Record demo sessions via https://asciinema.org/
+A tool to simplify everyday tasks for the common corporate programmer.
 
 ## What
 
+batarang consists of various modules, each supporting a distinct system or task.
+Each module provides a list of actions and batarang is in the end not much more
+than a simple interface to search & execute the tasks provided by all activated
+modules.
+
 ### Bitbucket
 
-- Clone
-- Browse
+The bitbucket module can index repositories from a single bitbucket server
+installation. Especially handy if you regularly need to browse or clone
+repositories. If you work with a single repo most of the time, this module might
+not help you very much.
+
+#### Tasks
+
+- Clone a repository
+- Browse a repository
 
 ### Jenkins
 
-- Run
-- Browse
+The jenkins meodule can index the jobs in a single jenkins installation.
 
-### More
+#### Tasks
 
-- Add more usefull stuff
-- Private Modules (like shell scripts)
+- Run a job
+- Browse a job
+
+## Todo
+
+### RobinModule
+
+The RobinModule will support external task definitions e.g. shell scripts. You
+might wonder why you need a task runner to run shell scripts if you already have
+... a shell. Well, don't ask me :D
+
+### Promo
+
+Record demo sessions via https://asciinema.org/. Or at least add screenshots.
 
 ## Build
 
@@ -52,10 +52,6 @@ A cli tool to easen the burden of everyday dev tasks
 ### Build batarang
 
 see `rebuild.sh`
-
-### My native executable is 49 MB wth?
-
-Use upx to reduce the size down to 14 MB
 
 ## License
 
