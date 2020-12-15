@@ -156,7 +156,7 @@ jobs:
           ls -l /home/runner/work/batarang; ls -l /home/runner/work/batarang/batarang
 
       - name: Rename binary
-        run: mv bat-${{env.VERSION}}-all bat
+        run: mv batarang-${{env.VERSION}}-all bat
 
       - name: 'Publish Linux Image'
         if: success()
