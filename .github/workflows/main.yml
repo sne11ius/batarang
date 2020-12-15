@@ -131,7 +131,7 @@ jobs:
         run: |
           echo "UPLOAD_URL=$(cat upload_url.txt)" >> $GITHUB_ENV
 
-      -name : Print debug info
+      - name : Print debug info
         if: contains(github.ref, 'v')
         run: |
           ls -l /home/runner/work/batarang; ls -l /home/runner/work/batarang/batarang
