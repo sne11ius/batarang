@@ -14,8 +14,13 @@ import com.googlecode.lanterna.gui2.Window.Hint.CENTERED
 import com.googlecode.lanterna.gui2.Window.Hint.NO_DECORATIONS
 import com.googlecode.lanterna.screen.TerminalScreen
 import com.googlecode.lanterna.terminal.ansi.UnixTerminal
+import wi.co.batarang.Settings.configFileForModule
+import wi.co.batarang.module.Module
 import wi.co.batarang.module.activation.ActivationModule.isModuleActive
 import wi.co.batarang.module.modules
+import java.nio.file.Files.exists
+import java.nio.file.Files.readString
+import java.nio.file.Files.writeString
 import kotlin.system.exitProcess
 
 @Suppress("TooGenericExceptionCaught")
@@ -25,14 +30,14 @@ fun main(args: Array<String>) {
     }
     Settings.update()
     if ("-u" in args) {
-        updateModuleData()
+        updateAllModuleData()
         exitProcess(0)
     }
 
     if ("---generate-Native-Image-Config" in args) {
         // Use as much stuff as possible to generate data for graalvm
         // Hence no `exitProcess`
-        updateModuleData()
+        updateAllModuleData()
     }
     runGui(args)
 }
@@ -53,7 +58,7 @@ fun printHelpAndExit() {
 
 private fun runGui(args: Array<String>) {
     val allActions = modules.filter { isModuleActive(it) }.flatMap { module ->
-        module.setData(Settings.readModuleData(module))
+        module.setData(readModuleData(module))
         module.getActions()
     }
     val immediateActions = allActions.filter { it.matches(args.toList()) }
@@ -62,7 +67,8 @@ private fun runGui(args: Array<String>) {
         println("Run ${action.label}? (Y/n)")
         val input = readLine()
         if (input.isNullOrBlank() || input.toLowerCase().trim() == "y") {
-            action.action.run()
+            val message = action.action.invoke()
+            println(message)
             exitProcess(0)
         }
     }
@@ -106,7 +112,9 @@ fun buildLayout(args: Array<String>, allActions: List<Action>) {
         } else {
             actions.forEach { action ->
                 actionList.addItem(action.label) {
-                    action.action.run()
+                    terminal.close()
+                    val output = action.action.invoke()
+                    println(output)
                     exitProcess(0)
                 }
             }
@@ -128,10 +136,24 @@ fun buildLayout(args: Array<String>, allActions: List<Action>) {
     textGUI.addWindowAndWait(window)
 }
 
-private fun updateModuleData() {
-    modules.filter { isModuleActive(it) }.forEach { module ->
-        println("Aktualisiere Daten für ${module.javaClass.simpleName}")
-        val moduleData = module.updateData()
-        Settings.writeModuleData(module, moduleData)
+private fun updateAllModuleData() {
+    modules.filter { isModuleActive(it) }.forEach { updateModuleData(it) }
+}
+
+fun updateModuleData(module: Module) {
+    println("Updating ${module.javaClass.simpleName}")
+    val moduleData = module.updateData()
+    writeModuleData(module, moduleData)
+}
+
+fun readModuleData(module: Module): String {
+    val configFile = configFileForModule(module)
+    if (!exists(configFile)) {
+        updateModuleData(module)
     }
+    return readString(configFile)
+}
+
+fun writeModuleData(module: Module, moduleData: String) {
+    writeString(configFileForModule(module), moduleData)
 }

@@ -3,7 +3,7 @@ package wi.co.batarang
 data class Action(
     val label: String,
     val tags: List<String>,
-    val action: Runnable
+    val action: () -> String
 ) {
     fun matches(search: List<String>): Boolean {
         return search

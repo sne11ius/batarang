@@ -63,6 +63,7 @@ object JenkinsModule : Module {
                     tags = listOf("jenkins", "browse", job.name, job.description, job.url)
                 ) {
                     launch(job.url)
+                    "[jenkins] opened ${job.name}"
                 },
                 Action(
                     label = "[jenkins] RUN ${job.name}",
@@ -70,6 +71,7 @@ object JenkinsModule : Module {
                 ) {
                     val request = mkPost(job.url + "/build")
                     httpClient.send(request, ofString())
+                    "[jenkins] started ${job.name}"
                 }
             )
         }

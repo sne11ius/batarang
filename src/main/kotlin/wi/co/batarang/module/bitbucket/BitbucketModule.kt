@@ -57,12 +57,14 @@ object BitbucketModule : Module {
                     tags = listOf("bitbucket", "clone", it.projectKey, it.slug, it.readme)
                 ) {
                     "git clone ${it.mkCloneUrl(gitBaseUrl)}".runBackground()
+                    "[bitbucket] cloned ${it.projectKey}/${it.slug}"
                 },
                 Action(
                     label = "[bitbucket] BROWSE ${it.projectKey}/${it.slug}",
                     tags = listOf("bitbucket", "browse", it.projectKey, it.slug, it.readme)
                 ) {
                     launch(it.mkWebUrl(httpBaseUrl))
+                    "[bitbucket] opened ${it.projectKey}/${it.slug}"
                 }
             )
         }

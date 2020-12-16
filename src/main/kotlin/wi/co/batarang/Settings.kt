@@ -9,7 +9,6 @@ import java.nio.file.Files
 import java.nio.file.Files.createDirectories
 import java.nio.file.Files.exists
 import java.nio.file.Files.readAllLines
-import java.nio.file.Files.readString
 import java.nio.file.Files.writeString
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -74,16 +73,6 @@ object Settings {
         }
     }
 
-    fun settingsForModule(module: Module): List<Setting> {
-        return module.requiredSettings.map { settingKey ->
-            val absoluteKey = module.javaClass.simpleName + "." + settingKey.key
-            Setting(
-                key = settingKey,
-                value = readSettings().first { it.startsWith(absoluteKey) }.substringAfter("=")
-            )
-        }
-    }
-
     private fun readSettings(): List<String> {
         return readAllLines(configFile)
     }
@@ -92,11 +81,7 @@ object Settings {
         writeString(configFile, settings.joinToString("\n"))
     }
 
-    fun readModuleData(module: Module): String {
-        return readString(configDir.resolve(module.javaClass.simpleName + ".txt"))
-    }
-
-    fun writeModuleData(module: Module, moduleData: String) {
-        writeString(configDir.resolve(module.javaClass.simpleName + ".txt"), moduleData)
+    fun configFileForModule(module: Module): Path {
+        return configDir.resolve(module.javaClass.simpleName + ".txt")
     }
 }
