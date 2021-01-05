@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: mabe02/lanterna
-          ref: refs/heads/release/3.1
+          ref: refs/heads/master
           path: lanterna
 
       - name: Setup Java 11

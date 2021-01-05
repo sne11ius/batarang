@@ -13,7 +13,7 @@ import com.googlecode.lanterna.gui2.TextBox
 import com.googlecode.lanterna.gui2.Window.Hint.CENTERED
 import com.googlecode.lanterna.gui2.Window.Hint.NO_DECORATIONS
 import com.googlecode.lanterna.screen.TerminalScreen
-import com.googlecode.lanterna.terminal.ansi.UnixTerminal
+import com.googlecode.lanterna.terminal.DefaultTerminalFactory
 import wi.co.batarang.Settings.configFileForModule
 import wi.co.batarang.module.Module
 import wi.co.batarang.module.activation.ActivationModule.isModuleActive
@@ -77,7 +77,7 @@ private fun runGui(args: Array<String>) {
 
 @SuppressWarnings("MagicNumber")
 fun buildLayout(args: Array<String>, allActions: List<Action>) {
-    val terminal = UnixTerminal()
+    val terminal = DefaultTerminalFactory().createHeadlessTerminal()
     val screen = TerminalScreen(terminal)
     screen.startScreen()
 
