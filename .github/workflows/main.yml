@@ -200,7 +200,7 @@ jobs:
           java-version: 11
 
       - name: Install lanterna
-        run: mvn -f lanterna/pom.xml -Dmaven.test.skip=true install
+        run: mvn -f lanterna/pom.xml -DskipTests install
 
       - name: Build fat jar
         run: |
