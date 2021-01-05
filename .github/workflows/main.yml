@@ -208,7 +208,7 @@ jobs:
           JAVA_HOME: ./graalvm-ce-java11-20.3.0
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-          ./graalvm-ce-java11-20.3.0/bin/native-image --no-server --no-fallback --allow-incomplete-classpath -jar batarang-${{env.VERSION}}-all.jar
+          ./graalvm-ce-java11-20.3.0/bin/native-image --no-server --no-fallback --allow-incomplete-classpath --initialize-at-build-time -jar batarang-${{env.VERSION}}-all.jar
 
       - name: Compress binaries
         uses: svenstaro/upx-action@v2
